@@ -184,4 +184,4 @@ while True:
         df.to_csv("data.csv", mode='a', index=False, header=False)
 
     ax_spec.set_xlabel("Frequency (MHz)")
-    time.sleep(0.5)
+    time.sleep(0.1)
