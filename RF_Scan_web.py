@@ -119,7 +119,6 @@ while True:
     if power is None:
         time.sleep(0.01)
         continue
-    print(len(power))
     spectrogram_buffer.appendleft(power)
     power_list = np.sum(power)
     mean_buffer.append(power_list)
