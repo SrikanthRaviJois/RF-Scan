@@ -56,6 +56,14 @@ mean_buffer = deque(maxlen=40)
 
 plot = st.empty()
 plot2 = st.empty()
+
+# Set matplotlib rcParams for smaller font sizes
+plt.rcParams.update({
+    'axes.titlesize': 10,
+    'axes.labelsize': 8,
+    'xtick.labelsize': 3,
+    'ytick.labelsize': 3,
+})
 plot3 = st.empty()
 csv_button = st.button("Save Data to CSV")
 
@@ -111,7 +119,7 @@ while True:
     if power is None:
         time.sleep(0.01)
         continue
-
+    print(len(power))
     spectrogram_buffer.appendleft(power)
     power_list = np.sum(power)
     mean_buffer.append(power_list)
@@ -141,8 +149,9 @@ while True:
         sock.sendto(samples.astype(np.complex64).tobytes(), (udp_ip_input, UDP_PORT))
 
     fig_spec, (ax_spec, ax_pow) = plt.subplots(nrows=1, ncols=2, figsize=(5, 3), width_ratios=[3, 1])
-    ax_spec.imshow(np.array(spectrogram_buffer), origin='upper', aspect='auto', extent=[0 if input_source == "Red Pitaya" else freqs_mhz[0],50 if input_source == "Red Pitaya" else freqs_mhz[-1],0, len(spectrogram_buffer)],cmap='jet', vmin=np.min(power), vmax=np.max(power))
+    ax_spec.imshow(np.array(spectrogram_buffer), origin='upper', aspect='auto', extent=[-62.5 if input_source == "Red Pitaya" else freqs_mhz[0],62.5 if input_source == "Red Pitaya" else freqs_mhz[-1],0, len(spectrogram_buffer)],cmap='jet', vmin=np.min(power), vmax=np.max(power))
     ax_spec.set_title("Spectrogram")
+    ax_spec.set_xlim(0, 62.5)
     ax_pow.plot(power_buffer, np.arange(len(power_buffer)))
     ax_pow.set_title("Real-Time Power")
     ax_pow.set_xlabel("Time")
@@ -175,4 +184,5 @@ while True:
         df = pd.DataFrame(samples, columns=['samples'])
         df.to_csv("data.csv", mode='a', index=False, header=False)
 
-    time.sleep(0.01)
+    ax_spec.set_xlabel("Frequency (MHz)")
+    time.sleep(0.5)
